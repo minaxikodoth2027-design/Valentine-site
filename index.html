@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💜</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Comic Sans MS', cursive;
+    background: linear-gradient(135deg, #6a0dad, #4b0082, #0000ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: rgba(255,255,255,0.95);
+    padding: 25px 35px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,0,0,0.3);
+    z-index: 5;
+    width: 340px;
+}
+
+h1 {
+    color: #6a0dad;
+}
+
+.countdown {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.photo {
+    width: 160px;
+    border-radius: 20px;
+    margin: 10px 0;
+    box-shadow: 0 0 15px pink;
+}
+
+.buttons {
+    margin-top: 15px;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    margin: 8px;
+    transition: 0.3s;
+}
+
+#yesBtn {
+    background: #ff4da6;
+    color: white;
+}
+
+#noBtn {
+    background: #cccccc;
+}
+
+/* Floating Hearts */
+.heart {
+    position: absolute;
+    font-size: 22px;
+    animation: float 6s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(100vh); opacity: 1; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+}
+
+/* Fireworks */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="mainBox">
+
+<div class="countdown" id="timer"></div>
+
+<img src="couple.jpg" class="photo">
+
+<h1>Aditya, will you be my Valentine? 💜</h1>
+
+<div class="buttons">
+    <button id="yesBtn">YES 💕</button>
+    <button id="noBtn">NO 😐</button>
+</div>
+
+</div>
+
+<canvas id="fireworks"></canvas>
+
+<script>
+// COUNTDOWN TIMER (Valentine's Day)
+const targetDate = new Date("February 14, 2026 00:00:00").getTime();
+
+setInterval(() => {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+
+    document.getElementById("timer").innerHTML =
+    "⏳ Valentine arrives in " + days + "d " + hours + "h " + mins + "m 💘";
+}, 1000);
+
+
+// Buttons logic
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+
+let noMessages = [
+    "Really?? 😭",
+    "Try again 😏",
+    "You sure about that? 👀",
+    "Wrong answer 😤",
+    "Don't break my heart 💔",
+    "Think again 🥺"
+];
+
+let yesSize = 18;
+
+// NO button moves + popup + YES grows
+noBtn.addEventListener("click", () => {
+
+    alert(noMessages[Math.floor(Math.random() * noMessages.length)]);
+
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+
+    yesSize += 6;
+    yesBtn.style.fontSize = yesSize + "px";
+});
+
+// YES clicked
+yesBtn.addEventListener("click", () => {
+
+    startFireworks();
+
+    setTimeout(() => {
+        document.body.innerHTML = `
+        <div style="
+        height:100vh;
+        background: linear-gradient(135deg, #6a0dad, #4b0082, #0000ff);
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        text-align:center;
+        font-family: Comic Sans MS;
+        color:white;
+        padding:20px;">
+
+        <h1>Yay! I knew you'd say yes 💕🥹</h1>
+
+        <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"
+        width="220"
+        style="border-radius:20px; box-shadow:0 0 20px pink;">
+
+        <h2>You’re my forever Valentine 💜</h2>
+        </div>
+        `;
+    }, 3500);
+});
+
+
+// Floating Hearts Generator
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "💜";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 15 + 15) + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+        heart.remove();
+    }, 6000);
+}
+
+setInterval(createHeart, 300);
+
+
+// Fireworks Animation
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function startFireworks() {
+    for (let i = 0; i < 150; i++) {
+        particles.push({
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            speedX: (Math.random() - 0.5) * 10,
+            speedY: (Math.random() - 0.5) * 10,
+            life: 100
+        });
+    }
+    animateFireworks();
+}
+
+function animateFireworks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach((p, index) => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+        p.life--;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "pink";
+        ctx.fill();
+
+        if (p.life <= 0) particles.splice(index, 1);
+    });
+
+    if (particles.length > 0) {
+        requestAnimationFrame(animateFireworks);
+    }
+}
+</script>
+
+</body>
+</html>
